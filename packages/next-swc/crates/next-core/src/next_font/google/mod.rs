@@ -115,8 +115,8 @@ impl ImportMappingReplacement for NextFontGoogleReplacer {
         let fallback = get_font_fallback(self.project_path, options, request_hash);
         let properties = get_font_css_properties(options, fallback, request_hash).await?;
         let js_asset = VirtualSource::new(
-            next_js_file_path("internal/font/google".to_string())
-                .join(format!("{}.js", get_request_id(options.font_family(), request_hash).await?)),
+            next_js_file_path("internal/font/google".to_string().into())
+                .join(format!("{}.js", get_request_id(options.font_family(), request_hash).await?).into()),
             AssetContent::file(FileContent::Content(
                 formatdoc!(
                     r#"
@@ -183,7 +183,7 @@ impl NextFontGoogleCssModuleReplacer {
 #[turbo_tasks::value_impl]
 impl ImportMappingReplacement for NextFontGoogleCssModuleReplacer {
     #[turbo_tasks::function]
-    fn replace(&self, _capture: String) -> Vc<ImportMapping> {
+    fn replace(&self, _capture: Arc<String>) -> Vc<ImportMapping> {
         ImportMapping::Ignore.into()
     }
 
@@ -216,17 +216,20 @@ impl ImportMappingReplacement for NextFontGoogleCssModuleReplacer {
             options.font_family(),
             request_hash,
         );
-        let css_virtual_path = next_js_file_path("internal/font/google".to_string()).join(format!(
-            "/{}.module.css",
-            get_request_id(options.font_family(), request_hash).await?
-        ));
+        let css_virtual_path = next_js_file_path("internal/font/google".to_string().into()).join(
+            format!(
+                "/{}.module.css",
+                get_request_id(options.font_family(), request_hash).await?
+            )
+            .into(),
+        );
 
         // When running Next.js integration tests, use the mock data available in
         // process.env.NEXT_FONT_GOOGLE_MOCKED_RESPONSES instead of making real
         // requests to Google Fonts.
         let env = Vc::upcast::<Box<dyn ProcessEnv>>(CommandLineProcessEnv::new());
         let mocked_responses_path = &*env
-            .read("NEXT_FONT_GOOGLE_MOCKED_RESPONSES".to_string())
+            .read("NEXT_FONT_GOOGLE_MOCKED_RESPONSES".to_string().into())
             .await?;
         let stylesheet_str = mocked_responses_path
             .as_ref()
@@ -295,7 +298,7 @@ impl NextFontGoogleFontFileReplacer {
 #[turbo_tasks::value_impl]
 impl ImportMappingReplacement for NextFontGoogleFontFileReplacer {
     #[turbo_tasks::function]
-    fn replace(&self, _capture: String) -> Vc<ImportMapping> {
+    fn replace(&self, _capture: Arc<String>) -> Vc<ImportMapping> {
         ImportMapping::Ignore.into()
     }
 
@@ -337,7 +340,7 @@ impl ImportMappingReplacement for NextFontGoogleFontFileReplacer {
         }
 
         let font_virtual_path = next_js_file_path("internal/font/google".to_string())
-            .join(format!("/{}.{}", name, ext));
+            .join(format!("/{}.{}", name, ext).into());
 
         // doesn't seem ideal to download the font into a string, but probably doesn't
         // really matter either.
