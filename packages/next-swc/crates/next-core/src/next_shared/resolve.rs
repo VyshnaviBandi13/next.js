@@ -87,7 +87,7 @@ impl ResolvePlugin for UnsupportedModulesResolvePlugin {
             if UNSUPPORTED_PACKAGES.contains(module.as_str()) {
                 UnsupportedModuleIssue {
                     file_path,
-                    package: module.into(),
+                    package: module.clone(),
                     package_path: None,
                 }
                 .cell()
@@ -98,7 +98,7 @@ impl ResolvePlugin for UnsupportedModulesResolvePlugin {
                 if UNSUPPORTED_PACKAGE_PATHS.contains(&(module, path)) {
                     UnsupportedModuleIssue {
                         file_path,
-                        package: module.into(),
+                        package: module.clone(),
                         package_path: Some(path.to_owned()),
                     }
                     .cell()
