@@ -256,7 +256,9 @@ impl PagesProject {
         Ok(if let Some(pages) = self.pages_structure().await?.pages {
             pages.project_path()
         } else {
-            self.project().project_path().join("pages".to_string())
+            self.project()
+                .project_path()
+                .join("pages".to_string().into())
         })
     }
 
@@ -264,7 +266,7 @@ impl PagesProject {
     fn transitions(self: Vc<Self>) -> Vc<TransitionsByName> {
         Vc::cell(
             [(
-                "next-dynamic".to_string(),
+                "next-dynamic".to_string().into(),
                 Vc::upcast(NextDynamicTransition::new(Vc::upcast(
                     self.client_transition(),
                 ))),
@@ -597,7 +599,7 @@ impl PageEndpoint {
                     this.pages_project
                         .project()
                         .project_path()
-                        .join("_".to_string()),
+                        .join("_".to_string().into()),
                 )),
                 Request::parse(Value::new(Pattern::Constant(
                     "next/dist/client/next-dev-turbopack.js".to_string(),
@@ -744,7 +746,7 @@ impl PageEndpoint {
                 let asset_path = get_asset_path_from_pathname(pathname, ".js");
 
                 let ssr_entry_chunk_path_string = format!("pages{asset_path}");
-                let ssr_entry_chunk_path = node_path.join(ssr_entry_chunk_path_string);
+                let ssr_entry_chunk_path = node_path.join(ssr_entry_chunk_path_string.into());
                 let EntryChunkGroupResult {
                     asset: ssr_entry_chunk,
                     ..
@@ -790,7 +792,7 @@ impl PageEndpoint {
             this.pages_project
                 .project()
                 .node_root()
-                .join("server".to_string()),
+                .join("server".to_string().into()),
             this.pages_project.project().project_path(),
             this.pages_project.ssr_module_context(),
             this.pages_project.edge_ssr_module_context(),
@@ -810,7 +812,7 @@ impl PageEndpoint {
             this.pages_project
                 .project()
                 .node_root()
-                .join("server/data".to_string()),
+                .join("server/data".to_string().into()),
             this.pages_project.project().project_path(),
             this.pages_project.ssr_data_module_context(),
             this.pages_project.edge_ssr_data_module_context(),
@@ -830,7 +832,7 @@ impl PageEndpoint {
             this.pages_project
                 .project()
                 .node_root()
-                .join("server".to_string()),
+                .join("server".to_string().into()),
             this.pages_project.project().project_path(),
             this.pages_project.api_module_context(),
             this.pages_project.edge_api_module_context(),
@@ -851,7 +853,7 @@ impl PageEndpoint {
         let chunk_path = entry_chunk.ident().path().await?;
 
         let asset_path = node_root
-            .join("server".to_string())
+            .join("server".to_string().into())
             .await?
             .get_path_to(&chunk_path)
             .context("ssr chunk entry path must be inside the node root")?;
@@ -863,9 +865,8 @@ impl PageEndpoint {
         };
         let manifest_path_prefix = get_asset_prefix_from_pathname(&this.pathname.await?);
         Ok(Vc::upcast(VirtualOutputAsset::new(
-            node_root.join(format!(
-                "server/pages{manifest_path_prefix}/pages-manifest.json",
-            )),
+            node_root
+                .join(format!("server/pages{manifest_path_prefix}/pages-manifest.json",).into()),
             AssetContent::file(File::from(serde_json::to_string_pretty(&pages_manifest)?).into()),
         )))
     }
@@ -901,7 +902,7 @@ impl PageEndpoint {
                     import
                 );
 
-                let server_path = node_root.join("server".to_string());
+                let server_path = node_root.join("server".to_string().into());
                 let server_path_value = server_path.await?;
                 let files = chunk_output
                     .iter()
@@ -927,9 +928,9 @@ impl PageEndpoint {
 
         let loadable_path_prefix = get_asset_prefix_from_pathname(&this.pathname.await?);
         let loadable_manifest = Vc::upcast(VirtualOutputAsset::new(
-            node_root.join(format!(
-                "server/pages{loadable_path_prefix}/react-loadable-manifest.json"
-            )),
+            node_root.join(
+                format!("server/pages{loadable_path_prefix}/react-loadable-manifest.json").into(),
+            ),
             AssetContent::file(
                 FileContent::Content(File::from(serde_json::to_string_pretty(
                     &loadable_manifest,
@@ -977,9 +978,8 @@ impl PageEndpoint {
         };
         let manifest_path_prefix = get_asset_prefix_from_pathname(&this.pathname.await?);
         Ok(Vc::upcast(VirtualOutputAsset::new(
-            node_root.join(format!(
-                "server/pages{manifest_path_prefix}/build-manifest.json",
-            )),
+            node_root
+                .join(format!("server/pages{manifest_path_prefix}/build-manifest.json",).into()),
             AssetContent::file(File::from(serde_json::to_string_pretty(&build_manifest)?).into()),
         )))
     }
@@ -1106,9 +1106,10 @@ impl PageEndpoint {
                 };
                 let manifest_path_prefix = get_asset_prefix_from_pathname(&this.pathname.await?);
                 let middleware_manifest_v2 = Vc::upcast(VirtualOutputAsset::new(
-                    node_root.join(format!(
-                        "server/pages{manifest_path_prefix}/middleware-manifest.json"
-                    )),
+                    node_root.join(
+                        format!("server/pages{manifest_path_prefix}/middleware-manifest.json")
+                            .into(),
+                    ),
                     AssetContent::file(
                         FileContent::Content(File::from(serde_json::to_string_pretty(
                             &middleware_manifest_v2,
