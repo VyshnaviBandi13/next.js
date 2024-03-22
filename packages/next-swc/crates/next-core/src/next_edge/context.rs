@@ -101,13 +101,15 @@ pub async fn get_edge_resolve_options_context(
 
     // https://github.com/vercel/next.js/blob/bf52c254973d99fed9d71507a2e818af80b8ade7/packages/next/src/build/webpack-config.ts#L96-L102
     let mut custom_conditions = vec![
-        mode.await?.condition().to_string(),
-        "edge-light".to_string(),
-        "worker".to_string(),
+        mode.await?.condition().to_string().into(),
+        "edge-light".to_string().into(),
+        "worker".to_string().into(),
     ];
 
     match ty {
-        ServerContextType::AppRSC { .. } => custom_conditions.push("react-server".to_string()),
+        ServerContextType::AppRSC { .. } => {
+            custom_conditions.push("react-server".to_string().into())
+        }
         ServerContextType::AppRoute { .. }
         | ServerContextType::Pages { .. }
         | ServerContextType::PagesData { .. }
@@ -156,15 +158,15 @@ pub async fn get_edge_chunking_context_with_client_assets(
     asset_prefix: Vc<Option<String>>,
     environment: Vc<Environment>,
 ) -> Result<Vc<Box<dyn EcmascriptChunkingContext>>> {
-    let output_root = node_root.join("server/edge".to_string());
+    let output_root = node_root.join("server/edge".to_string().into());
     let next_mode = mode.await?;
     Ok(Vc::upcast(
         BrowserChunkingContext::builder(
             project_path,
             output_root,
             client_root,
-            output_root.join("chunks".to_string()),
-            client_root.join("static/media".to_string()),
+            output_root.join("chunks".to_string().into()),
+            client_root.join("static/media".to_string().into()),
             environment,
             next_mode.runtime_type(),
         )
@@ -182,15 +184,15 @@ pub async fn get_edge_chunking_context(
     node_root: Vc<FileSystemPath>,
     environment: Vc<Environment>,
 ) -> Result<Vc<Box<dyn EcmascriptChunkingContext>>> {
-    let output_root = node_root.join("server/edge".to_string());
+    let output_root = node_root.join("server/edge".to_string().into());
     let next_mode = mode.await?;
     Ok(Vc::upcast(
         BrowserChunkingContext::builder(
             project_path,
             output_root,
             output_root,
-            output_root.join("chunks".to_string()),
-            output_root.join("assets".to_string()),
+            output_root.join("chunks".to_string().into()),
+            output_root.join("assets".to_string().into()),
             environment,
             next_mode.runtime_type(),
         )

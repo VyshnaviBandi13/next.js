@@ -400,7 +400,7 @@ pub struct ExperimentalTurboConfig {
 pub struct RuleConfigItemOptions {
     pub loaders: Vec<LoaderItem>,
     #[serde(default, alias = "as")]
-    pub rename_as: Option<String>,
+    pub rename_as: Option<Arc<String>>,
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize, TraceRawVcs)]
