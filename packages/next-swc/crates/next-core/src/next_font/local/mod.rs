@@ -116,10 +116,13 @@ impl ImportMappingReplacement for NextFontLocalReplacer {
                 .unwrap_or_else(|| "".to_owned()),
         );
         let js_asset = VirtualSource::new(
-            context.join(format!(
-                "{}.js",
-                get_request_id(options_vc.font_family(), request_hash).await?
-            )),
+            context.join(
+                format!(
+                    "{}.js",
+                    get_request_id(options_vc.font_family(), request_hash).await?
+                )
+                .into(),
+            ),
             AssetContent::file(FileContent::Content(file_content.into()).into()),
         );
 
