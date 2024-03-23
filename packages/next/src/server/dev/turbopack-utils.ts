@@ -118,7 +118,14 @@ export function formatIssue(issue: Issue) {
   }
 
   if (description) {
-    message += renderStyledStringToErrorAnsi(description) + '\n\n'
+    if (
+      description.type === 'text' &&
+      description.value.startsWith('Import map: No import map entry')
+    ) {
+      // skip import map entry warning
+    } else {
+      message += renderStyledStringToErrorAnsi(description) + '\n\n'
+    }
   }
 
   // TODO: make it possible to enable this for debugging, but not in tests.
